@@ -1,62 +1,31 @@
 package web.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import web.dao.RoleDao;
+import org.springframework.stereotype.Service;
+import web.dao.RoleRepo;
 import web.model.Role;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-@Component
+@Service
 public class RoleServiceImpl implements RoleService {
-    private final RoleDao roleDao;
+
+    private final RoleRepo roleRepo;
 
     @Autowired
-    public RoleServiceImpl(RoleDao roleDao) {
-        this.roleDao = roleDao;
+    public RoleServiceImpl(RoleRepo roleRepository) {
+        this.roleRepo = roleRepository;
     }
 
-    @Override
-    @Transactional
-    public void addRole(Role role) {
-        roleDao.addRole(role);
+    public void saveRole(Role role) {
+        roleRepo.save(role);
     }
 
-    @Override
-    @Transactional
-    public void updateRole(Role role) {
-        roleDao.updateRole(role);
+    public List<Role> getAllRoles() {
+        return roleRepo.findAll();
     }
 
-    @Override
-    @Transactional
-    public void deleteRoleById(List<Long> id) {
-        roleDao.deleteRoleById(id);
-    }
-
-    @Override
-    @Transactional
-    public Set<Role> getRoleById(List<Long> id) {
-        return roleDao.getRoleById(id);
-    }
-
-    @Override
-    @Transactional
-    public List<Role> listRoles() {
-        return roleDao.listRoles();
-    }
-
-    @Override
-    @Transactional
     public Role getRoleByName(String name) {
-        return roleDao.getRoleByName(name);
-    }
 
-    @Override
-    @Transactional
-    public HashSet<Role> getSetOfRoles(String[] roleNames) {
-        return roleDao.getSetOfRoles(roleNames);
+        return roleRepo.findByName(name);
     }
 }

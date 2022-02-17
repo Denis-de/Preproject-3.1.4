@@ -4,67 +4,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import web.dao.UserDao;
+import org.springframework.stereotype.Service;
+import web.dao.UserRepo;
 import web.model.User;
-import java.util.List;
 
-@Component
+import java.util.List;
+import java.util.Optional;
+
+@Service
 public class UserServiceImpl implements UserService {
 
-    private final UserDao userDao;
+    private final UserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
 
+
     @Autowired
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
+    public UserServiceImpl(UserRepo userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepo = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Override
-    @Transactional
-    public void addUser(User user) {
+    public void saveOrUpdate(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.addUser(user);
+        userRepo.save(user);
+    }
+
+    public List<User> getUsersList() {
+        return userRepo.findAll();
+    }
+
+    public Optional<User> findById(Long id) {
+        return userRepo.findById(id);
+    }
+
+
+    public void deleteUser(Long id) {
+        userRepo.deleteById(id);
+    }
+
+    public User findByUserName(String email) {
+        return userRepo.findByEmail(email);
     }
 
     @Override
-    @Transactional
-    public void updateUser(User user) {
-        userDao.updateUser(user);
-    }
-
-    @Override
-    @Transactional
-    public void deleteUserById(Long id) {
-        userDao.deleteUserById(id);
-    }
-
-    @Override
-    @Transactional
-    public User getUserById(Long id) {
-        return userDao.getUserById(id);
-    }
-
-    @Override
-    @Transactional
-    public List<User> listUsers() {
-        return userDao.listUsers();
-    }
-
-    @Override
-    @Transactional
-    public User getUserByEmail(String email) {
-        return userDao.getUserByEmail(email);
-    }
-
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = getUserByEmail(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepo.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException(String.format("User '%s' not found", username));
+            throw new UsernameNotFoundException(String.format("User '%s' not found", email));
         }
         return user;
     }

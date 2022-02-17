@@ -7,6 +7,7 @@ import web.model.Role;
 import web.model.User;
 import web.service.RoleService;
 import web.service.UserService;
+
 import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,16 +26,16 @@ public class DBInit {
     @PostConstruct
     @Transactional
     void testUser() {
-        roleService.addRole(new Role("ADMIN"));
-        roleService.addRole(new Role("USER"));
+        roleService.saveRole(new Role("ADMIN"));
+        roleService.saveRole(new Role("USER"));
 
-        Set <Role> setAdmin = new HashSet<>();
+        Set<Role> setAdmin = new HashSet<>();
         setAdmin.add(roleService.getRoleByName("ADMIN"));
         setAdmin.add(roleService.getRoleByName("USER"));
-        userService.addUser(new User("admin", "admin",21, "admin@mail.ru", "ADMIN",setAdmin));
+        userService.saveOrUpdate(new User("admin", "admin", 21, "admin@mail.ru", "ADMIN", setAdmin));
 
-        Set <Role> setUser = new HashSet<>();
+        Set<Role> setUser = new HashSet<>();
         setUser.add(roleService.getRoleByName("USER"));
-        userService.addUser(new User("user", "user",22, "user@mail.ru", "USER",setUser));
+        userService.saveOrUpdate(new User("user", "user", 22, "user@mail.ru", "USER", setUser));
     }
 }
